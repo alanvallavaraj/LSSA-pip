@@ -3,12 +3,9 @@ name: Publish to PyPI
 on:
   release:
     types: [published]
-  push:
-    branches: [main]
 
 jobs:
   build:
-    if: github.event_name == 'release' || github.event.head_commit.message == 'Publish lssaopt 0.1.0'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -24,40 +21,14 @@ jobs:
 
   publish:
     name: Publish Python distribution to PyPI
-    if: github.event_name == 'release' || github.event.head_commit.message == 'Publish lssaopt 0.1.0'
     needs: build
     runs-on: ubuntu-latest
     environment: pypi
     permissions:
       id-token: write
-      contents: write
     steps:
       - uses: actions/download-artifact@v4
         with:
           name: python-package-distributions
           path: dist/
-
-      - name: Publish to PyPI
-        id: pypi
-        continue-on-error: true
-        uses: pypa/gh-action-pypi-publish@release/v1
-        with:
-          skip-existing: true
-
-      - name: Check out repository for status report
-        if: always()
-        uses: actions/checkout@v4
-
-      - name: Record publication status
-        if: always()
-        run: |
-          printf 'PyPI publication status: %s\nPackage: lssaopt\nVersion: 0.1.0\nCommit: %s\n' "${{ steps.pypi.outcome }}" "${{ github.sha }}" > PUBLISH_STATUS.md
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add PUBLISH_STATUS.md
-          git commit -m "Record PyPI publication status" || true
-          git push
-
-      - name: Fail workflow if publication failed
-        if: steps.pypi.outcome == 'failure'
-        run: exit 1
+      - uses: pypa/gh-action-pypi-publish@release/v1
