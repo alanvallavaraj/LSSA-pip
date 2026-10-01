@@ -7,8 +7,10 @@ This package provides the frozen research implementation used for out-of-sample 
 ## Installation
 
 ```bash
-pip install lssa
+pip install lssaopt
 ```
+
+The PyPI distribution is named `lssaopt`; the Python import remains `lssa`.
 
 ## Quick start
 
