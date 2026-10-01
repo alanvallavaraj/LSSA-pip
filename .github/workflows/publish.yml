@@ -3,9 +3,12 @@ name: Publish to PyPI
 on:
   release:
     types: [published]
+  push:
+    branches: [main]
 
 jobs:
   build:
+    if: github.event_name == 'release' || github.event.head_commit.message == 'Publish lssaopt 0.1.0'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -21,6 +24,7 @@ jobs:
 
   publish:
     name: Publish Python distribution to PyPI
+    if: github.event_name == 'release' || github.event.head_commit.message == 'Publish lssaopt 0.1.0'
     needs: build
     runs-on: ubuntu-latest
     environment: pypi
